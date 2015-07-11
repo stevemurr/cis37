@@ -19,6 +19,7 @@ int main(void)
 			printf("%s", "? ");
 			scanf("%d %29s %lf", &account, name, &balance);
 		}
+		printf("%s\n", "Omg you guys");
 	}
 	fclose( cfPtr );
 }
