@@ -15,6 +15,7 @@ int main(void)
 {
 	FILE *file_pointer;
 
+<<<<<<< HEAD
 	struct person {
 		char firstName [ 15 ];
 		char lastName [ 15 ];
@@ -41,5 +42,20 @@ int main(void)
 		fscanf(file_pointer, "%s %s %s", p.firstName, p.lastName, p.age);
 		printf("%d\t%15s\t%15s\t%15s\n", x, p.firstName, p.lastName, p.age);
 		x++;
+=======
+	FILE *cfPtr;
+
+	if (( cfPtr = fopen("clients.dat", "w")) == NULL) {
+		puts("Could not open\n");
+	} else {
+		printf("%s", "? ");
+		scanf("%d %29s %lf", &account, name, &balance);
+		while ( !feof( stdin ) ) {
+			fprintf(cfPtr, "%d %s %.2f\n", account, name, balance);
+			printf("%s", "? ");
+			scanf("%d %29s %lf", &account, name, &balance);
+		}
+		printf("%s\n", "Omg you guys");
+>>>>>>> 535af85b8493605495a624a85fbfb1d6b4d5f891
 	}
 }
