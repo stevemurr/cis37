@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 #define size_of_array(x) (sizeof(x) / sizeof(x[0]))
 
 typedef struct {
@@ -50,12 +51,13 @@ int main(void)
 	void initArray(Array *a, size_t initialSize);
 	double calculateCharges(double hours);
 	void print_car_info(Array* car_array, size_t elements);
-	Car make_a_car();
+	Car make_a_car(int id);
 	//
 
 	Array car_array;
 	initArray(&car_array, 1);
-	insertArray(&car_array, make_a_car());
+	insertArray(&car_array, make_a_car(car_array.used));
+	insertArray(&car_array, make_a_car(car_array.used));
 	//printf("%s\n", car_array.array[0].brand);
 	print_car_info(&car_array, car_array.used);
 
@@ -70,11 +72,23 @@ void print_car_info(Array *car_array, size_t elements)
 	}
 }
 
-Car make_a_car() 
+Car make_a_car(int id) 
 {	
-	//printf("We are going to make a car - Please enter the following \n");
-
-	Car car = {1, "Honda", "Civic", 5};
+	char model[50];
+	char brand[50];
+	double hours_parked;
+	printf("We are going to make a car - Please enter the following \n");
+	printf("Model: ");
+	scanf(" %s", model);
+	printf("Brand: ");
+	scanf(" %s", brand);
+	printf("Hours Parked: ");
+	scanf(" %lf", &hours_parked);
+	Car car;
+	car.id = id+1;
+	memcpy(car.model, model, sizeof(model));
+	memcpy(car.brand, brand, sizeof(brand));
+	car.hours_parked = hours_parked;
 	return car;
 }
 
