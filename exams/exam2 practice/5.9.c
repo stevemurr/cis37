@@ -51,6 +51,7 @@ int main(void)
 	void initArray(Array *a, size_t initialSize);
 	double calculateCharges(double hours);
 	void print_car_info(Array* car_array, size_t elements);
+	void print_car_cost(Array* car_array, size_t elements);
 	Car make_a_car(int id);
 	//
 
@@ -58,9 +59,10 @@ int main(void)
 	initArray(&car_array, 1);
 	insertArray(&car_array, make_a_car(car_array.used));
 	insertArray(&car_array, make_a_car(car_array.used));
+	
 	//printf("%s\n", car_array.array[0].brand);
 	print_car_info(&car_array, car_array.used);
-
+	print_car_cost(&car_array, car_array.used);
 	return 0;
 }
 
@@ -69,6 +71,17 @@ void print_car_info(Array *car_array, size_t elements)
 	for (int i = 0; i < elements; i++)
 	{
 		printf("%d %s %s %.2f\n", car_array->array[i].id, car_array->array[i].model, car_array->array[i].brand, car_array->array[i].hours_parked);
+	}
+}
+
+void print_car_cost(Array *car_array, size_t elements)
+{
+	
+	double calculateCharges(double hours);
+	for (int i = 0; i < elements; i++)
+	{
+		printf("%d %s %s %.2f\n", car_array->array[i].id, car_array->array[i].model, car_array->array[i].brand, calculateCharges(car_array->array[i].hours_parked));
+
 	}
 }
 
