@@ -20,6 +20,7 @@ int main(void)
 	scanf("%d", &exponent);
 	puts("Your answer is: ");
 	printf("%d\n", power(base, exponent));
+	printf("%s\n", "One last thing");
 	return 0;
 }
 

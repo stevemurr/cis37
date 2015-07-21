@@ -1,14 +1,13 @@
 #include <stdio.h>
 #include <string.h>
-
 int main(void)
 {
 	struct customer {
 		char lastName[15];
 		char firstName[15];
 		unsigned int customerNumber;
-
-		struct {
+		int new_int = customer + phoneNumber;
+			struct {
 			char phoneNumber[11];
 			char address[50];
 			char city[15];

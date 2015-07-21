@@ -7,6 +7,8 @@
 #define OVERTIME_MODIFIER 1.5
 #define COMMISSION_SALES_MODIFIER .057
 
+
+
 int main(void)
 {
 	int code, hours, overtime_hours, pieces_created;
