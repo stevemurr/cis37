@@ -13,14 +13,19 @@
 
 int main(void)
 {
+	// File pointer to the file
+
 	FILE *file_pointer;
 
+	// Struct holding the model for our data.
 
 	struct person {
 		char firstName [ 15 ];
 		char lastName [ 15 ];
 		char age [ 4 ];
 	};
+
+	// Creating a person object and adding 100 of them to nameage.dat
 	struct person p = {"unanswered", "noinput", "0"};
 	
 	file_pointer = fopen("nameage.dat", "w");
@@ -28,6 +33,7 @@ int main(void)
 		fprintf(file_pointer, "%s %s %s\n", p.firstName, p.lastName, p.age);
 	}
 	fclose(file_pointer);
+	// Manual Entry - Set to 10 once update and delete have been implemented.
 	puts("Prepare for manual entry - (firstname lastname age)\n");
 	file_pointer = fopen("nameage.dat", "a");
 	for (int j = 0; j < manual_entry_length; j++) {
@@ -35,6 +41,7 @@ int main(void)
 		fprintf(file_pointer, "%s %s %s\n", p.firstName, p.lastName, p.age);
 	}
 	fclose(file_pointer);
+
 	file_pointer = fopen("nameage.dat", "r");
 	printf("%s %20s %17s %15s\n", "#:","Firstname:", "Lastname:", "Age:");
 	int x = 1;
@@ -43,18 +50,7 @@ int main(void)
 		printf("%d\t%15s\t%15s\t%15s\n", x, p.firstName, p.lastName, p.age);
 		x++;
 
-	FILE *cfPtr;
-
-	if (( cfPtr = fopen("clients.dat", "w")) == NULL) {
-		puts("Could not open\n");
-	} else {
-		printf("%s", "? ");
-		scanf("%d %29s %lf", &account, name, &balance);
-		while ( !feof( stdin ) ) {
-			fprintf(cfPtr, "%d %s %.2f\n", account, name, balance);
-			printf("%s", "? ");
-			scanf("%d %29s %lf", &account, name, &balance);
-		}
-		printf("%s\n", "Omg you guys");
+	
 	}
+	
 }
