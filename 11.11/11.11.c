@@ -6,6 +6,10 @@
 #define manual_entry_length 1
 
 typedef struct {
+	size_t last_known_size;
+} size_holder;
+
+typedef struct {
 	int account_number;
 	char firstName [ 15 ];
 	char lastName [ 15 ];
@@ -45,19 +49,22 @@ free(a->array);
 a->array = NULL;
 a->used = a->size = 0;
 }
-void read_file_into_memory(FILE *FILE, Array *person_array);
-void delete_entry(FILE *FILE, Array *person_array);
+void read_file_into_memory(FILE *FILE, size_holder *sz, Array *person_array);
+void delete_entry(FILE *FILE, size_holder *sz, Array *person_array);
 int main(void)
 {
 	// File pointer to the file
-	void create_manual_entry(FILE *FILE);
-	void update_entry(FILE *FILE, Array *person_array);
-	void print_contents_of_file(FILE *FILE, Array *person_array);
+	void create_manual_entry(FILE *FILE, Array *person_array, int size);
+	void update_entry(FILE *FILE, size_holder *sz, Array *person_array);
+	void print_contents_of_file(FILE *FILE, size_holder *sz, Array *person_array);
+	size_holder *sz;
 	FILE *file_pointer;
 	Person *person_pointer;
 	Array person_array;
+
+	// right now i'm just updating the last known size whenever i init the array.
 	initArray(&person_array, length_of_file);
-	// Struct holding the model for our data.
+
 
 	file_pointer = fopen("nameage.dat", "w");
 	for (int i = 0; i < length_of_file; i++) {
@@ -65,18 +72,20 @@ int main(void)
 		insertArray(&person_array, p);
 		fprintf(file_pointer, "%d %s %s %s\n", p.account_number,p.firstName, p.lastName, p.age);
 	}
-	freeArray(&person_array);
+	sz->last_known_size = person_array.used;
+	//freeArray(&person_array);
 	fclose(file_pointer);
-	delete_entry(file_pointer, &person_array);
-	//print_contents_of_file(file_pointer, &person_array);
-	//create_manual_entry(file_pointer);
+	create_manual_entry(file_pointer, &person_array, sz->last_known_size);
+	print_contents_of_file(file_pointer, sz, &person_array);
+
+	//delete_entry(file_pointer, sz, &person_array);
 	//update_entry(file_pointer, &person_array);
 	//print_contents_of_file(file_pointer, &person_array);
 }
 void write_to_file(FILE *FILE, Array *person_array, char write_flag)
 {
 		FILE = fopen("nameage.dat", &write_flag);
-		read_file_into_memory(FILE, person_array);
+		//read_file_into_memory(FILE, sz, person_array);
 		for (int i = 0; i < person_array->used; i++) {
 			fprintf(FILE, "%d %s %s %s\n", person_array->array[i].account_number,
 		                                 person_array->array[i].firstName,
@@ -84,19 +93,19 @@ void write_to_file(FILE *FILE, Array *person_array, char write_flag)
 																	   person_array->array[i].age);
 		}
 }
-void print_contents_of_file(FILE *FILE, Array *person_array)
+void print_contents_of_file(FILE *FILE, size_holder *sz, Array *person_array)
 {
-	//void read_file_into_memory(FILE *FILE, Array *person_array);
-	read_file_into_memory(FILE, person_array);
+	read_file_into_memory(FILE, sz, person_array);
 	for (int i = 0; i < person_array->used; i++) {
 		printf("%d %s %s %s\n", person_array->array[i].account_number, person_array->array[i].firstName,  person_array->array[i].lastName,  person_array->array[i].age);
 	}
 	fclose(FILE);
-	freeArray(person_array);
+	//freeArray(person_array);
 }
 
-void read_file_into_memory(FILE *FILE, Array *person_array)
+void read_file_into_memory(FILE *FILE, size_holder *sz, Array *person_array)
 {
+	initArray(person_array, sz->last_known_size);
 	FILE = fopen("nameage.dat", "r+");
 	int ac;
 	char first_name[50];
@@ -110,19 +119,20 @@ void read_file_into_memory(FILE *FILE, Array *person_array)
 		strcpy(temp_person.age, age);
 		insertArray(person_array, temp_person);
 	}
+	sz->last_known_size = ac;
 	fclose(FILE);
 }
-void delete_entry(FILE *FILE, Array *person_array)
+void delete_entry(FILE *FILE, size_holder *sz, Array *person_array)
 {
 	int record;
-	read_file_into_memory(FILE, person_array);
-	printf("%s", "Which record to update? ");
+	read_file_into_memory(FILE, sz, person_array);
+	printf("%s", "Which record to delete? ");
 	scanf("%d", &record);
 	removeElement(person_array, record);
 	write_to_file(FILE, person_array, 'w');
 }
 // For appending only
-void create_manual_entry(FILE *FILE)
+void create_manual_entry(FILE *FILE, Array *person_array, int size)
 {
 	char firstName[ 50 ];
 	char lastName[ 50 ];
@@ -130,18 +140,18 @@ void create_manual_entry(FILE *FILE)
 	FILE = fopen("nameage.dat", "a");
 	for (int i = 0; i < manual_entry_length; i++) {
 		scanf("%s %s %d", firstName, lastName, &age);
-		fprintf(FILE, "%s %s %d", firstName, lastName, age);
+		fprintf(FILE, "%d %s %s %d", size, firstName, lastName, age);
 	}
 	fclose(FILE);
 }
 
-void update_entry(FILE *FILE, Array *person_array)
+void update_entry(FILE *FILE, size_holder *sz, Array *person_array)
 {
 	char firstName[ 50 ];
 	char lastName[ 50 ];
 	char age[ 4 ];
 	int record;
-	read_file_into_memory(FILE, person_array);
+	read_file_into_memory(FILE, sz, person_array);
 	printf("%s", "Which record to update? ");
 	scanf("%d", &record);
 	for (int i = 0; i < person_array->used; i++) {
