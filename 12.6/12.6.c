@@ -33,9 +33,31 @@ int main( void )
 
   struct node* listOne = malloc(sizeof(struct node));
   struct node* listTwo = malloc(sizeof(struct node));
+  struct node* temp = malloc(sizeof(struct node));
+  struct node* tempPtr;
   BootStrapLists(listOne, listTwo);
+  printf("%s", "The first: ");
+  PrintLinkedList(listOne);
+  printf("%s", "The second: ");
+  PrintLinkedList(listTwo);
+  printf("%s", "Combined: ");
   Concatenate(listOne, listTwo);
   PrintLinkedList(listOne);
+  // listOne->letter = 'a';
+  // listOne->next = listTwo;
+  // listTwo->letter = 'b';
+  // listTwo->next = NULL;
+
+  //
+  // tempPtr = listOne->next; // temporarily store the next value from current
+  // temp = listTwo; // store the second value in temp
+  // listTwo = listOne; // the second value gets the first value
+  // listTwo->next = NULL; // set the second next value to what we need.
+  // listOne = temp; // copy over the second value into the first value.
+  // listOne->next = tempPtr; // link the first list to the second.
+  // if (listOne->next == NULL) {
+  //   printf("%s\n", "is null");
+  // }
 
 }
 

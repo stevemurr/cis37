@@ -22,13 +22,20 @@ struct node {
   struct node* next;
 };
 
+typedef struct {
+  unsigned int counter;
+} Counter;
+
+int CountLinkedList( struct node* list );
 int Length( struct node* head );
 void PrintLinkedList( struct node* head );
 void AddElementToList( struct node* head, int value );
 void BootStrapList(struct node* a);
 void Concatenate( struct node* a, struct node* b);
 int GenerateRandomNumber( int max );
-void SortLinkedList( struct node* a );
+void InsertElementInSortedOrder( struct node* list, int value ); // This is the
+                                                                 // most amazing
+                                                                 // function.
 
 int main( void )
 {
@@ -37,15 +44,27 @@ int main( void )
   struct node* listOne = malloc(sizeof(struct node));
   BootStrapList(listOne);
   PrintLinkedList(listOne);
-  SortLinkedList(listOne);
-  PrintLinkedList(listOne);
+  printf("The sum is: %d\n", CountLinkedList(listOne));
 }
 
 void BootStrapList(struct node* a)
 {
   for (int i = 0; i < 25; i++) {
-    AddElementToList(a, GenerateRandomNumber( 100 ));
+    InsertElementInSortedOrder(a, GenerateRandomNumber( 100 ));
   }
+}
+int CountLinkedList( struct node* list )
+{
+    struct node* current = list; // this is a pointer that get the pointer to
+                                 // the head node.
+    int count = 0; // counter variable
+
+    while ( current != NULL ) // while current is not NULL run the loop
+    {
+      count = count + current->letter; // increment the count
+      current = current->next; // current gets current->next
+    }
+    return count;
 }
 
 int GenerateRandomNumber( int max )
@@ -98,7 +117,7 @@ void AddElementToList( struct node* head, int value )
   struct node* newNode = malloc(sizeof( struct node ));
   newNode->letter = value;
   newNode->next = NULL;
-  if (Length(head) == 0) { // If the list is empty add this element.
+  if (head == NULL) { // If the list is empty add this element.
     head = newNode;
   } else { // Else append the element to the back of the list.
     while ( current->next != NULL ) {
@@ -108,23 +127,35 @@ void AddElementToList( struct node* head, int value )
   }
 }
 
-void SortLinkedList( struct node* a )
+void InsertElementInSortedOrder( struct node* list, int value )
 {
-  struct node* nextPtr = malloc(sizeof(struct node));
-  struct node* previousPtr = malloc(sizeof(struct node));
-  struct node* temp = malloc(sizeof(struct node));
-  struct node* current = a;
+  struct node* newPtr;
+  struct node* previousPtr;
+  struct node* currentPtr;
 
-  while ( current->next != NULL ) {
-    if ( current->next->letter < current->letter ) {
-      nextPtr = current->next->next;
-      previousPtr = current->next;
-      temp = current->next;
-      current->next = current;
-      current->next->next = nextPtr;
-      current = previousPtr;
-      current->next = previousPtr;
+  newPtr = malloc(sizeof(struct node));
+
+  if ( newPtr != NULL ) {
+    newPtr->letter = value;
+    newPtr->next = NULL;
+
+    previousPtr = NULL;
+    currentPtr = list;
+
+    while ( currentPtr != NULL && value > currentPtr->letter ) {
+      previousPtr = currentPtr;
+      currentPtr = currentPtr->next;
+    }
+    if ( previousPtr == NULL ) {
+      newPtr->next = list;
+      list = newPtr;
+    }
+    else {
+      previousPtr->next = newPtr;
+      newPtr->next = currentPtr;
     }
   }
-  //current->next = NULL;
+  else {
+    printf( "%c not inserted. no mem", value );
+  }
 }
