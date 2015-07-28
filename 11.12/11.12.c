@@ -1,181 +1,279 @@
-// write a program that makes hardware.dat
-// create 100 empty records
-// make manual input function
-// make update function
-// make delete function
-// make list function
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+/*
+11.12
+Hardware Inventory
 
-#define manual_entry_length 1
-#define INITIAL_LENGTH 100
+You're the owner of a hardware store and need to keep an inventory that can tell
+you what tools you have, how many you have and the cost of each one.  Write a
+program that initalizes the file "hardware.dat" to 100 empty records, lets you
+input the data concerning each tool, enables you to list all your tools, lets
+delete a record for a tooll that you no longer have and lets you update any
+information in the file.  The tool identification number should be the record
+number.  Use the following information to start your file:
+
+Record  Tool Name         Quantity  Cost
+3       Electric Sander   7         57.98
+17      Hammer            76        11.99
+24      Jig saw           21        11.00
+39      Lawn Mower        3         79.50
+56      Power saw         18        99.99
+68      Screwdriver       106       6.99
+77      Sledge Hammer     11        21.50
+83      Wrench            34        7.50
+
+1) Create hardware.dat with 100 empty records.
+2) Manual Entry
+3) List tools
+4) Delete a record
+5) Update a record
+
+*/
+/*
+11.11
+Write statements that accomplish each of the following.  Assume that the structure
+
+struct Tool {
+  int record;
+  char firstNmae[ 15 ];
+  int quantity;
+};
+
+has been defined and that the file is already open for writing.
+
+a) Init the file "nameage.dat" with 100 records:
+lastName = "unassigned", firstName="", age=""
+b) input 10 records manually
+c) update a record
+d) delete a record
+*/
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 typedef struct {
-	int record_number;
-	char tool_name [ 50 ];
-	int quantity;
-	double cost;
+  char ToolName[ 30 ];
+  int quantity;
+  double cost;
 } Tool;
 
-typedef struct {
-Tool *array;
-size_t used;
-size_t size;
-} Array;
-
-void read_file_into_memory(FILE *FILE, Array *person_array);
-void print_contents_of_file(FILE *FILE, Array *person_array);
-void delete_entry(FILE *FILE, Array *person_array);
-void create_manual_entry(FILE *FILE);
-void update_entry(FILE *FILE, Array *person_array);
-void write_to_file(FILE *FILE, Array *person_array, char write_flag);
-void bootstrap_our_hardware_store(FILE *FILE, Array *tool_array);
-
-void initArray(Array *a, size_t initialSize) {
-a->array = (Tool *)malloc(initialSize * sizeof(Tool));
-a->used = 0;
-a->size = initialSize;
-}
-
-void insertArray(Array *a, Tool element) {
-if (a->used == a->size) {
-	a->size *= 2;
-	a->array = (Tool *)realloc(a->array, a->size * sizeof(Tool));
-}
-a->array[a->used++] = element;
-}
-
-void removeElement(Array *a, int index) {
-	a->used--;
-	for (int i = index; i < a->used; i++) {
-		memcpy(&a->array[index], &a->array[index+1], sizeof(Tool));
-	}
-}
-
-void freeArray(Array *a) {
-free(a->array);
-a->array = NULL;
-a->used = a->size = 0;
-}
-
-int main(void)
-{
-  char user_input;
-  Array tool_array;
-  FILE *file_pointer;
-  initArray(&tool_array, 100);
-  bootstrap_our_hardware_store(file_pointer, &tool_array);
-  while (user_input != 'q') {
-    printf("%s", "Which option?: ");
-    scanf("%s", &user_input);
-    if (user_input == '1') {
-      print_contents_of_file(file_pointer, &tool_array);
-    }
-    if (user_input == '2') {
-      delete_entry(file_pointer, &tool_array);
-    }
-  }
-}
-
-void bootstrap_our_hardware_store(FILE *FILE, Array *tool_array)
-{
-  FILE = fopen("hardware.dat", "w");
-  for (int i = 0; i < INITIAL_LENGTH; i++) {
-    Tool p = {i+1, "ToolName", 0, 0.00};
-    insertArray(tool_array, p);
-    fprintf(FILE, "%d %s %d %.2lf\n", p.record_number,p.tool_name, p.quantity, p.cost);
-  }
-  freeArray(tool_array);
-  fclose(FILE);
-}
-
-void print_contents_of_file(FILE *FILE, Array *person_array)
-{
-	//void read_file_into_memory(FILE *FILE, Array *person_array);
-	read_file_into_memory(FILE, person_array);
-	for (int i = 0; i < person_array->used; i++) {
-		printf("%d %s %d %lf\n", person_array->array[i].record_number,
-                            person_array->array[i].tool_name,
-                            person_array->array[i].quantity,
-                            person_array->array[i].cost);
-	}
-	fclose(FILE);
-	freeArray(person_array);
-}
-
-void read_file_into_memory(FILE *FILE, Array *person_array)
-{
-	FILE = fopen("hardware.dat", "r+");
-	int record_number;
-  char tool_name[ 50 ];
-	int quantity;
-	double cost;
-	while (fscanf(FILE, "%d %s %d %lf", &record_number, tool_name, &quantity, &cost) != EOF) {
-		Tool temp_person;
-		temp_person.record_number = record_number;
-	  strcpy(temp_person.tool_name, tool_name);
-		temp_person.quantity = quantity;
-		temp_person.cost = cost;
-		insertArray(person_array, temp_person);
-	}
-	fclose(FILE);
-}
-void delete_entry(FILE *FILE, Array *person_array)
-{
-	int record;
-	read_file_into_memory(FILE, person_array);
-	printf("%s", "Which record to delete? ");
-	scanf("%d", &record);
-	removeElement(person_array, record);
-	write_to_file(FILE, person_array, 'w');
-}
-// For appending only
-void create_manual_entry(FILE *FILE)
-{
-	char tool_name[ 50 ];
-	int quantity;
-	double cost;
-	FILE = fopen("hardware.dat", "a");
-	for (int i = 0; i < manual_entry_length; i++) {
-		scanf("%s %d %lf", tool_name, &quantity, &cost);
-		fprintf(FILE, "%s %d %lf", tool_name, quantity, cost);
-	}
-	fclose(FILE);
-}
-
-void update_entry(FILE *FILE, Array *person_array)
-{
-	int record_number;
-	char tool_name[ 50 ];
-	int quantity;
-	double cost;
+typedef struct Node {
   int record;
-	read_file_into_memory(FILE, person_array);
-	printf("%s", "Which record to update? ");
-	scanf("%d", &record);
-	for (int i = 0; i < person_array->used; i++) {
-		if (person_array->array[i].record_number == record) {
-			printf("%s\n", "Record found - Insert new information");
-			scanf(" %s %d %lf", tool_name, &quantity, &cost);
-			strcpy(person_array->array[i].tool_name, tool_name);
-			person_array->array[i].quantity = quantity;
-			person_array->array[i].cost = cost;
-			fclose(FILE);
-			write_to_file(FILE, person_array, 'w');
-			return;
-		}
-	}
-	printf("%s\n", "That index doesn't exist.");
-}
-void write_to_file(FILE *FILE, Array *person_array, char write_flag)
+  Tool p;
+  struct Node* prev;
+  struct Node* next;
+} Node;
+
+FILE* OpenFile( FILE *FILE , char WriteFlag ); // Get a pointer to a file
+void ReadFile( FILE *FILE , Node* Head ); // read records and return head
+void BootStrapFile( FILE *FILE ); // creates basic file for assignment
+void AddElementToList( Node* Head, Tool p );
+int Length( Node* Head );
+void PrintLinkedList( Node* Head );
+void FreeLinkedList( Node** Head );
+void WriteToFile( FILE* FILE, Node* Head );
+void ManualEntry( Node* Head );
+Node* SearchLinkedList( Node* Head, int record );
+void UpdateRecord( Node* Head );
+void DeleteRecord( Node* Head );
+
+int main( void )
 {
-		FILE = fopen("hardware.dat", &write_flag);
-		read_file_into_memory(FILE, person_array);
-		for (int i = 0; i < person_array->used; i++) {
-			fprintf(FILE, "%d %s %d %lf\n", person_array->array[i].record_number,
-		                                 person_array->array[i].tool_name,
-																	   person_array->array[i].quantity,
-																	   person_array->array[i].cost);
-		}
+  FILE *FilePointer = OpenFile(FilePointer, 'w'); // Open file for writing
+  Node* Head = malloc(sizeof(Node));
+
+  BootStrapFile(FilePointer); // Create our base file
+  fclose(FilePointer); // Close the file
+
+  FilePointer = OpenFile(FilePointer, 'r'); // Reopen the file for reading
+  ReadFile(FilePointer, Head); // Read file into linked lists
+  PrintLinkedList( Head ); // Print the linked list
+  fclose(FilePointer);
+  FreeLinkedList(&Head);
+
+  Head = (Node* )realloc(Head, sizeof(Node));
+  FilePointer = OpenFile(FilePointer, 'r');
+  ReadFile( FilePointer, Head );
+  ManualEntry( Head );
+  fclose(FilePointer);
+  FilePointer = OpenFile(FilePointer, 'w'); // Reopen the file for reading
+
+  WriteToFile( FilePointer, Head );
+  fclose( FilePointer );
+  FreeLinkedList( &Head );
+
+  Head = (Node* )realloc(Head, sizeof(Node));
+  FilePointer = OpenFile(FilePointer, 'r');
+  ReadFile( FilePointer, Head );
+
+  UpdateRecord( Head ); // Update record
+  PrintLinkedList( Head );
+
+  DeleteRecord( Head );
+  PrintLinkedList( Head );
+
+}
+
+void UpdateRecord( Node* Head ) // found record from the search
+{
+  int record;
+  printf("%s\n", "Which record do you want to update? ");
+  scanf(" %d", &record );
+  Node* SearchResult = SearchLinkedList( Head, record );
+  char ToolName[ 30 ];
+  int quantity;
+  double cost;
+  printf("%s", "Give me the updated values: toolname quantity cost\n");
+  scanf(" %s %d %lf", ToolName, &quantity, &cost);
+  strcpy( SearchResult->p.ToolName, ToolName );
+  SearchResult->p.quantity = quantity;
+  SearchResult->p.cost = cost;
+}
+
+void DeleteRecord( Node* Head ) // found record from the search
+{
+  int record;
+  printf("%s\n", "Which record do you want to delete? ");
+  scanf(" %d", &record );
+  Node* SearchResult = SearchLinkedList( Head, record );
+  SearchResult->prev->next = SearchResult->next;
+}
+
+Node* SearchLinkedList( Node* Head, int record )
+{
+  Node* current = Head;
+  while ( current != NULL ) {
+    if ( current->record == record ) {
+      printf("%s\n", "Found it.");
+      return current;
+    } else {
+      //printf("%s\n", "Didn't find it.");
+    }
+    current = current->next;
+  }
+  printf("%s\n", "No Info.");
+  return Head;
+}
+
+void FreeLinkedList( Node** Head )
+{
+  Node* current = *Head;
+  while (current != NULL ) {
+    current = current->next;
+    free(current);
+  }
+  *Head = NULL;
+  free(*Head);
+}
+
+void ManualEntry( Node* Head )
+{
+  char ToolName[ 30 ];
+  int quantity;
+  double cost;
+  Tool p;
+  printf("%s\n", "toolname quantity cost");
+  scanf(" %s %d %lf", ToolName, &quantity, &cost);
+  strcpy(p.ToolName, ToolName);
+  p.quantity = quantity;
+  p.cost = cost;
+  AddElementToList(Head, p);
+}
+
+void PrintLinkedList( Node* Head )
+{
+  int record = 1;
+  Node* current = Head;
+  current = current->next;
+  while ( current != NULL ) {
+    current->record = record++;
+    printf("%d %s %d %f\n", current->record, current->p.ToolName, current->p.quantity, current->p.cost);
+    current = current->next;
+  }
+}
+
+int Length( Node* Head )
+{
+  Node* current = Head; // this is a pointer that get the pointer to
+                               // the head node.
+  int count = 0; // counter variable
+
+  while ( current != NULL ) { // while current is not NULL run the loop
+    count++; // increment the count
+    current = current->next; // current gets current->next
+  }
+  return count;
+}
+
+void AddElementToList( Node* Head, Tool p )
+{
+  Node* current = Head;
+  Node* newNode = malloc(sizeof( Node ));
+  Node* previous;
+  int record = 1;
+  strcpy(newNode->p.ToolName, p.ToolName);
+  newNode->p.quantity = p.quantity;
+  newNode->p.cost = p.cost;
+  newNode->next = NULL;
+  if ( current == NULL ) { // If the list is empty add this element.
+    Head = newNode;
+    Head->record = record;
+    Head->prev = NULL;
+  } else { // Else append the element to the back of the list.
+    while ( current->next != NULL ) {
+      previous = current;
+      current = current->next;
+      record++;
+    }
+    current->prev = previous;
+    current->next = newNode;
+    current->next->record = record;
+  }
+}
+
+void BootStrapFile( FILE *FILE )
+{
+   for ( int i = 0; i < 100; i++ )
+   {
+     Tool p = {"unassigned", 0, 0.0};
+     fprintf( FILE, "%s %d %lf\n", p.ToolName, p.quantity, p.cost );
+   }
+}
+
+void WriteToFile( FILE *FILE, Node* Head )
+{
+  Node* current = Head;
+  current = current->next;
+  while ( current != NULL ) {
+    fprintf(FILE, "%s %d %f\n", current->p.ToolName, current->p.quantity, current->p.cost);
+    current = current->next;
+  }
+}
+
+void ReadFile( FILE *FILE, Node* Head )
+{
+
+  char ToolName[ 30 ];
+  int quantity;
+  double cost;
+
+  while (fscanf(FILE, "%s %d %lf", ToolName, &quantity, &cost) != EOF) {
+    Tool p;
+    strcpy( p.ToolName, ToolName );
+    p.quantity = quantity;
+    p.cost = cost;
+    AddElementToList( Head, p );
+  }
+}
+
+FILE* OpenFile( FILE *FILE , char WriteFlag )
+{
+  /*
+  Write Flags:
+  w - Open file for writing
+  a - Append to the end of the file
+  b - Write binary data to file - useful for writing structs
+  r+ - Read and append
+  */
+  FILE = fopen("hardware.dat", &WriteFlag);
+  return FILE;
 }
